@@ -1,4 +1,11 @@
 # Change Log
+## [4.60.0](https://github.com/plivo/plivo-python/tree/v4.60.0) (2026-04-08)
+**Feature - PhoneNumber Compliance API support**
+- Added `phone_number_compliance_requirements` resource for discovering compliance requirements by country, number type, and user type
+- Added `phone_number_compliance` resource with full CRUD support (create, get, list, update, delete) for compliance applications
+- Added `phone_number_compliance_link` resource for bulk linking phone numbers to accepted compliance applications
+- Create and update operations support multipart file uploads for compliance documents
+
 ## [4.59.6](https://github.com/plivo/plivo-python/tree/v4.59.6) (2026-02-18)
 **Feature - Campaign API optional fields support**
 - Added `sample3`, `sample4`, `sample5` optional sample message fields to Campaign `create` and `update` methods
