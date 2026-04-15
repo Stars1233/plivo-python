@@ -24,6 +24,7 @@ from plivo.resources.profile import Profile
 from plivo.resources.queued_calls import QueuedCalls
 from plivo.resources.regulatory_compliance import EndUsers, ComplianceDocumentTypes, ComplianceDocuments, \
     ComplianceRequirements, ComplianceApplications
+from plivo.resources.phone_number_compliance import PhoneNumberComplianceRequirements, PhoneNumberComplianceApplications, PhoneNumberComplianceLink
 from plivo.utils import is_valid_mainaccount, is_valid_subaccount
 from plivo.version import __version__
 from requests import Request, Session
@@ -127,6 +128,9 @@ class Client(object):
         self.verify_session = Sessions(self)
         self.verify_callerids = VerifyCallerids(self)
         self.transcriptions = Transcriptions(self)
+        self.phone_number_compliance_requirements = PhoneNumberComplianceRequirements(self)
+        self.phone_number_compliance = PhoneNumberComplianceApplications(self)
+        self.phone_number_compliance_link = PhoneNumberComplianceLink(self)
 
 
     def __enter__(self):

@@ -22,3 +22,4 @@ from .profile import Profile
 from .multipartycall import MultiPartyCalls, MultiPartyCall, MultiPartyCallParticipant
 from .verify import Sessions
 from .tollfree_verification import TollfreeVerifications
+from .phone_number_compliance import PhoneNumberComplianceRequirements, PhoneNumberComplianceApplications, PhoneNumberComplianceLink
