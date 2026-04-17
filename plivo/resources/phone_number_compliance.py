@@ -13,10 +13,17 @@ class PhoneNumberComplianceRequirements(PlivoResourceInterface):
 
     def get(self, country_iso=None, number_type=None, user_type=None):
         # GET /PhoneNumber/Compliance/Requirements
+        params = {}
+        if country_iso:
+            params['country_iso'] = country_iso
+        if number_type:
+            params['number_type'] = number_type
+        if user_type:
+            params['user_type'] = user_type
         return self.client.request(
             'GET',
             ('PhoneNumber', 'Compliance', 'Requirements'),
-            dict(country_iso=country_iso, number_type=number_type, user_type=user_type)
+            params
         )
 
 
@@ -114,6 +121,4 @@ def _build_compliance_multipart(data, documents):
         for idx, doc_path in enumerate(documents):
             field_name = 'documents[{}].file'.format(idx)
             files[field_name] = (os.path.basename(doc_path), open(doc_path, 'rb'))
-    if not files:
-        files = None
     return payload, files
