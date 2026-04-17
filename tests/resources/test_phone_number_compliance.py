@@ -68,6 +68,45 @@ class PhoneNumberComplianceRequirementsTest(PlivoResourceTestCase):
         self.assertEqual(self.client.current_request.method, 'GET')
         self.assertEqual(len(response.document_types), 0)
 
+    def test_get_requirements_partial_args_no_none_in_url(self):
+        """Calling get() with only country_iso should not send
+        number_type=None or user_type=None in the query string."""
+        expected_response = {
+            'requirement_id': 'req_partial',
+            'document_types': []
+        }
+        self.client.set_expected_response(
+            status_code=200, data_to_return=expected_response)
+
+        self.client.phone_number_compliance_requirements.get(
+            country_iso='IN')
+
+        url = self.client.current_request.url
+        self.assertIn('country_iso=IN', url)
+        self.assertNotIn('None', url)
+        self.assertNotIn('number_type', url)
+        self.assertNotIn('user_type', url)
+        self.assertEqual(self.client.current_request.method, 'GET')
+
+    def test_get_requirements_no_args_no_none_in_url(self):
+        """Calling get() with no arguments should produce a clean URL
+        with no query parameters containing None."""
+        expected_response = {
+            'requirement_id': 'req_noargs',
+            'document_types': []
+        }
+        self.client.set_expected_response(
+            status_code=200, data_to_return=expected_response)
+
+        self.client.phone_number_compliance_requirements.get()
+
+        url = self.client.current_request.url
+        self.assertNotIn('None', url)
+        self.assertNotIn('number_type', url)
+        self.assertNotIn('user_type', url)
+        self.assertNotIn('country_iso', url)
+        self.assertEqual(self.client.current_request.method, 'GET')
+
 
 class PhoneNumberComplianceApplicationsTest(PlivoResourceTestCase):
 
@@ -114,6 +153,88 @@ class PhoneNumberComplianceApplicationsTest(PlivoResourceTestCase):
 
         self.assertEqual(self.client.current_request.method, 'POST')
         self.assertEqual(response.compliance_id, 'comp_def456')
+
+    def test_create_without_documents(self):
+        """Create without documents parameter should succeed and use
+        multipart/form-data (not application/json)."""
+        expected_response = {
+            'compliance_id': 'comp_nodoc',
+            'message': 'created'
+        }
+        self.client.set_expected_response(
+            status_code=201, data_to_return=expected_response)
+
+        response = self.client.phone_number_compliance.create(
+            data={
+                'country_iso': 'IN',
+                'number_type': 'local',
+                'alias': 'India Local',
+                'end_user': {'name': 'Test User'},
+            })
+
+        self.assertEqual(self.client.current_request.method, 'POST')
+        self.assertEqual(response.compliance_id, 'comp_nodoc')
+        # Verify the request uses multipart encoding, not JSON
+        content_type = self.client.current_request.headers['Content-Type']
+        self.assertTrue(
+            any([
+                'multipart' in content_type,
+                'www-form-urlencoded' in content_type
+            ]))
+
+    def test_create_with_documents_none(self):
+        """Create with documents=None should succeed and use
+        multipart/form-data."""
+        expected_response = {
+            'compliance_id': 'comp_docnone',
+            'message': 'created'
+        }
+        self.client.set_expected_response(
+            status_code=201, data_to_return=expected_response)
+
+        response = self.client.phone_number_compliance.create(
+            data={
+                'country_iso': 'GB',
+                'number_type': 'mobile',
+                'alias': 'UK Mobile',
+                'end_user': {'name': 'Jane Doe'},
+            },
+            documents=None)
+
+        self.assertEqual(self.client.current_request.method, 'POST')
+        self.assertEqual(response.compliance_id, 'comp_docnone')
+        content_type = self.client.current_request.headers['Content-Type']
+        self.assertTrue(
+            any([
+                'multipart' in content_type,
+                'www-form-urlencoded' in content_type
+            ]))
+
+    def test_update_without_documents(self):
+        """Update without documents should succeed and use
+        multipart/form-data."""
+        expected_response = {
+            'message': 'updated',
+            'compliance': {
+                'compliance_id': 'comp_upd_nodoc',
+                'status': 'pending'
+            }
+        }
+        self.client.set_expected_response(
+            status_code=200, data_to_return=expected_response)
+
+        response = self.client.phone_number_compliance.update(
+            'comp_upd_nodoc',
+            data={'alias': 'New Alias'})
+
+        self.assertEqual(self.client.current_request.method, 'PATCH')
+        self.assertEqual(response.message, 'updated')
+        content_type = self.client.current_request.headers['Content-Type']
+        self.assertTrue(
+            any([
+                'multipart' in content_type,
+                'www-form-urlencoded' in content_type
+            ]))
 
     def test_list(self):
         expected_response = {
