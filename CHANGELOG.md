@@ -1,4 +1,9 @@
 # Change Log
+## [4.60.1](https://github.com/plivo/plivo-python/tree/v4.60.1) (2026-04-17)
+**Bug Fix - PhoneNumber Compliance API**
+- Fixed Requirements.get() sending None values as query params when not provided
+- Fixed create()/update() sending JSON instead of multipart when no document files provided
+
 ## [4.60.0](https://github.com/plivo/plivo-python/tree/v4.60.0) (2026-04-08)
 **Feature - PhoneNumber Compliance API support**
 - Added `phone_number_compliance_requirements` resource for discovering compliance requirements by country, number type, and user type
